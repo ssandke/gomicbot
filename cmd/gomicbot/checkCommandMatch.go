@@ -23,7 +23,7 @@ func __internalCheckCommandMatch(message string, command string, argsAllowed boo
 	return
 }
 
-func checkCommandMatch(message string, command string, argsAllowed bool, config *Configuration) (matched bool, args string) {
+func checkCommandMatch(message string, command string, isPrivateMessage bool, argsAllowed bool, config *Configuration) (matched bool, args string) {
 	directCommand := fmt.Sprintf("%s@%s", command, BotName)
 
 	matched, args = __internalCheckCommandMatch(message, directCommand, argsAllowed)
@@ -31,7 +31,7 @@ func checkCommandMatch(message string, command string, argsAllowed bool, config 
 		return
 	}
 
-	if !config.directCommandsOnly {
+	if !config.directCommandsOnly || isPrivateMessage {
 		matched, args = __internalCheckCommandMatch(message, command, argsAllowed)
 		if matched {
 			return
