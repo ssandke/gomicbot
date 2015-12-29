@@ -13,6 +13,11 @@ func main() {
 		panic(err)
 	}
 
+	stateStore, err := makeStateStore(config)
+	if err != nil {
+		panic(err)
+	}
+
 	bot, err := telebot.NewBot(config.token)
 	if err != nil {
 		panic(err)
@@ -23,7 +28,7 @@ func main() {
 		panic(err)
 	}
 
-	err = initConsumers(consumers, config, bot)
+	err = initConsumers(consumers, config, stateStore, bot)
 	if err != nil {
 		panic(err)
 	}
@@ -55,13 +60,19 @@ func loadConsumers() (consumers []MessageConsumer, err error) {
 	return
 }
 
-func initConsumers(consumers []MessageConsumer, config *Configuration, bot *telebot.Bot) error {
+func initConsumers(consumers []MessageConsumer, config *Configuration, store StateStore, bot *telebot.Bot) error {
 	for _, consumer := range consumers {
-		err := consumer.Initialize(config, bot)
+		err := consumer.Initialize(config, store, bot)
 		if err != nil {
 			// TODO: build a compostion of all the errors to return rather than just the first
 			return err
 		}
 	}
 	return nil
+}
+
+func makeStateStore(config *Configuration) (store StateStore, err error) {
+	store = new(InMemoryStateStore)
+	err = store.Initialize(config)
+	return
 }

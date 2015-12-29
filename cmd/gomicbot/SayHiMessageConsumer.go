@@ -3,11 +3,13 @@ package main
 import "github.com/ssandke/gomicbot/Godeps/_workspace/src/github.com/tucnak/telebot"
 
 type SayHiMessageConsumer struct {
-	bot *telebot.Bot
+	bot   *telebot.Bot
+	store StateStore
 }
 
-func (c *SayHiMessageConsumer) Initialize(config *Configuration, bot *telebot.Bot) error {
+func (c *SayHiMessageConsumer) Initialize(config *Configuration, store StateStore, bot *telebot.Bot) error {
 	c.bot = bot
+	c.store = store
 
 	return nil
 }

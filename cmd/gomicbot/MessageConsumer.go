@@ -5,6 +5,6 @@ import (
 )
 
 type MessageConsumer interface {
-	Initialize(*Configuration, *telebot.Bot) error
+	Initialize(*Configuration, StateStore, *telebot.Bot) error
 	ConsumeMessage(telebot.Message) (consumed bool, err error)
 }
