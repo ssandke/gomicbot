@@ -22,3 +22,8 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+# Godeps source mirroring
+Godeps/Readme
+Godeps/_workspace
+
