@@ -8,18 +8,32 @@ import (
 )
 
 type Configuration struct {
-	token        string
-	redisUrl     string
-	sayingChance float64
+	token              string
+	redisUrl           string
+	sayingChance       float64
+	directCommandsOnly bool
 }
+
+const TokenEnvName = "GOBOT_TOKEN"
+const RedisUrlEnvName = "REDIS_URL"
+const SayingChanceEnvName = "SAYING_CHANCE"
+const DirectCommandsOnlyEnvName = "DIRECT_COMMANDS_ONLY"
+
+const defaultDirectCommandOnly = "true"
+const defaultSayingChance = "0.8"
 
 func loadConfiguration() (*Configuration, error) {
 	p := new(Configuration)
-	p.token = os.Getenv("GOBOT_TOKEN")
-	p.redisUrl = os.Getenv("REDIS_URL")
+	p.token = os.Getenv(TokenEnvName)
+	p.redisUrl = os.Getenv(RedisUrlEnvName)
 
 	var err error
-	p.sayingChance, err = strconv.ParseFloat(os.Getenv("SAYING_CHANCE"), 64)
+	p.sayingChance, err = strconv.ParseFloat(getEnvWithDefault(SayingChanceEnvName, defaultSayingChance), 64)
+	if err != nil {
+		return nil, err
+	}
+
+	p.directCommandsOnly, err = strconv.ParseBool(getEnvWithDefault(DirectCommandsOnlyEnvName, defaultDirectCommandOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -41,4 +55,13 @@ func (c *Configuration) String() string {
 	}
 
 	return fmt.Sprintf("[token: %s, redis url: %s, saying chance: %f]", tokenStr, c.redisUrl, c.sayingChance)
+}
+
+func getEnvWithDefault(key string, defaultValue string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		value = defaultValue
+	}
+
+	return value
 }
