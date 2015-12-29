@@ -19,7 +19,7 @@ func (c *SayHiMessageConsumer) ConsumeMessage(message telebot.Message) (consumed
 	err = nil
 	consumed = false
 
-	if message.Text == "/hi" {
+	if message.Text == "/hi" || message.Text == "/hi@gomicbot" {
 		c.bot.SendMessage(message.Chat,
 			"Hello, "+message.Sender.FirstName+"!", &telebot.SendOptions{ReplyTo: message})
 		consumed = true
