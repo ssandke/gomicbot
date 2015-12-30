@@ -2,13 +2,14 @@ package main
 
 import (
 	"sync"
+
 	"time"
 )
 
 type InMemoryStateStore struct {
 	lock     sync.Mutex
 	lastSeen map[string]time.Time
-	sayings  map[string]struct{}
+	sayings  map[string]bool
 }
 
 func (s *InMemoryStateStore) Initialize(config *Configuration) error {
@@ -17,7 +18,7 @@ func (s *InMemoryStateStore) Initialize(config *Configuration) error {
 	defer s.lock.Unlock()
 
 	s.lastSeen = make(map[string]time.Time)
-	s.sayings = make(map[string]struct{})
+	s.sayings = make(map[string]bool)
 
 	return nil
 }
@@ -26,16 +27,36 @@ func (*InMemoryStateStore) Save() error {
 	return nil
 }
 
-func (*InMemoryStateStore) LoadSayings() ([]string, error) {
-	return nil, nil
+func (s *InMemoryStateStore) LoadSayings() ([]string, error) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	sayings := make([]string, 0, len(s.sayings))
+	for saying := range s.sayings {
+		sayings = append(sayings, saying)
+	}
+
+	return sayings, nil
 }
 
-func (*InMemoryStateStore) StoreSaying(saying string) error {
+func (s *InMemoryStateStore) StoreSaying(saying string) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	s.sayings[saying] = true
+
 	return nil
 }
 
-func (*InMemoryStateStore) RemoveSaying(saying string) (present bool, err error) {
-	return false, nil
+func (s *InMemoryStateStore) RemoveSaying(saying string) (present bool, err error) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	present = s.sayings[saying]
+	delete(s.sayings, saying)
+
+	err = nil
+	return
 }
 
 func (s *InMemoryStateStore) UpdateLastSeen(user string, seen time.Time) (lastseen time.Time, err error) {
