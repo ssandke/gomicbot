@@ -21,6 +21,10 @@ func (c *SayHiMessageConsumer) ConsumeMessage(message telebot.Message) (consumed
 	err = nil
 	consumed = false
 
+	if !c.config.isReader(message.Sender.ID) {
+		return
+	}
+
 	matched, _ := checkCommandMatch(message.Text, "/hi", message.IsPersonal(), false, c.config)
 	if matched {
 		c.bot.SendMessage(message.Chat,

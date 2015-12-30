@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"time"
 
 	"github.com/ssandke/gomicbot/Godeps/_workspace/src/github.com/tucnak/telebot"
@@ -14,6 +15,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	log.Printf("Configuration Loaded:\n%s", config)
 
 	stateStore, err := makeStateStore(config)
 	if err != nil {

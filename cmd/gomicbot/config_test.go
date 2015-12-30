@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -25,6 +26,8 @@ type configTestSpec struct {
 	errorSubstring         string
 	expectedDirectCommands bool
 	expectedSayingChance   float64
+	expectedReaders        []int
+	expectedWriters        []int
 }
 
 const validToken = "a:b"
@@ -33,13 +36,13 @@ const validWriters = "1,2"
 const validRedisUrl = "r:foo" // for now
 const validSayingChance = "0.3"
 const sayingChanceVal = 0.3
-const trueString = "true"
-const falseString = "false"
+const envTrue = "true"
+const envFalse = "false"
 
 var testSpecs = []configTestSpec{
-	{validToken, validReaders, validWriters, validRedisUrl, validSayingChance, trueString, "", true, sayingChanceVal},
-	{validToken, validReaders, validWriters, validRedisUrl, validSayingChance, falseString, "", false, sayingChanceVal},
-	{validToken, validReaders, validWriters, validRedisUrl, validSayingChance, "", "", true, sayingChanceVal},
+	{validToken, validReaders, validWriters, validRedisUrl, validSayingChance, envTrue, "", true, sayingChanceVal, []int{1, 2, 3}, []int{1, 2}},
+	{validToken, validReaders, "", validRedisUrl, validSayingChance, envFalse, "", false, sayingChanceVal, []int{1, 2, 3}, []int{}},
+	{validToken, "", validWriters, validRedisUrl, validSayingChance, "", "", true, sayingChanceVal, []int{}, []int{1, 2}},
 }
 
 func TestSayingChanceNonNumeric(t *testing.T) {
@@ -95,5 +98,34 @@ func TestConfigs(t *testing.T) {
 		if test.expectedSayingChance != c.sayingChance {
 			t.Errorf("Saying Chance was %v, expected %v", c.sayingChance, test.expectedSayingChance)
 		}
+		assertEqual(len(test.expectedReaders), len(c.readers), "reader count", t)
+		for _, id := range test.expectedReaders {
+			assertTrue(c.isReader(id), fmt.Sprintf("reader %d", id), t)
+		}
+
+		assertEqual(len(test.expectedWriters), len(c.writers), "writer count", t)
+		for _, id := range test.expectedWriters {
+			assertTrue(c.isWriter(id), fmt.Sprintf("writer %d", id), t)
+		}
 	}
+}
+
+func TestReadersWriterParsing(t *testing.T) {
+
+	idMap, err := listToMap("")
+	failOnError(t, err)
+	assertEqual(0, len(idMap), "empty string should be empty map", t)
+
+	idMap, err = listToMap("1,2,3")
+	failOnError(t, err)
+	assertEqual(3, len(idMap), "wrong element count", t)
+	assertTrue(idMap[1], "1", t)
+	assertTrue(idMap[2], "2", t)
+	assertTrue(idMap[3], "3", t)
+
+	idMap, err = listToMap(" 2  ,2   , 3 ")
+	failOnError(t, err)
+	assertEqual(2, len(idMap), "wrong element count", t)
+	assertTrue(idMap[2], "2", t)
+	assertTrue(idMap[3], "3", t)
 }

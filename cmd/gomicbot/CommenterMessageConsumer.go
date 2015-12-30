@@ -32,17 +32,20 @@ func (c *CommenterMessageConsumer) ConsumeMessage(message telebot.Message) (cons
 	err = nil
 	consumed = true
 
-	if c.commandMatch(message, "/list") {
+	writer := c.config.isWriter(message.Sender.ID)
+	reader := c.config.isReader(message.Sender.ID)
+
+	if writer && c.commandMatch(message, "/list") {
 		c.ListSayings(message)
-	} else if args := c.commandMatchWithArgs(message, "/add"); args != "" {
+	} else if args := c.commandMatchWithArgs(message, "/add"); writer && args != "" {
 		c.AddSaying(args, message)
-	} else if args := c.commandMatchWithArgs(message, "/remove"); args != "" {
+	} else if args := c.commandMatchWithArgs(message, "/remove"); writer && args != "" {
 		c.RemoveSaying(args, message)
-	} else if strings.Contains(message.Text, BotName) {
+	} else if reader && strings.Contains(message.Text, BotName) {
 		c.EmitSaying(message, true)
 	} else {
 		roll := c.rng.Float64()
-		if roll < c.config.sayingChance {
+		if reader && roll < c.config.sayingChance {
 			c.EmitSaying(message, false)
 			consumed = true
 		}
