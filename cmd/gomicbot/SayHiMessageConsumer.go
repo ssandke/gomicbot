@@ -1,10 +1,6 @@
 package main
 
-import (
-	"log"
-
-	"github.com/ssandke/gomicbot/Godeps/_workspace/src/github.com/tucnak/telebot"
-)
+import "github.com/ssandke/gomicbot/Godeps/_workspace/src/github.com/tucnak/telebot"
 
 type SayHiMessageConsumer struct {
 	bot    *telebot.Bot
@@ -24,8 +20,6 @@ func (c *SayHiMessageConsumer) ConsumeMessage(message telebot.Message) (consumed
 
 	err = nil
 	consumed = false
-
-	log.Printf("SayHi got message '%s' Pers: %v", message.Text, message.IsPersonal())
 
 	matched, _ := checkCommandMatch(message.Text, "/hi", message.IsPersonal(), false, c.config)
 	if matched {

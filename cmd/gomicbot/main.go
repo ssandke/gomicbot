@@ -6,6 +6,8 @@ import (
 	"github.com/ssandke/gomicbot/Godeps/_workspace/src/github.com/tucnak/telebot"
 )
 
+const BotName = "@gomicbot"
+
 func main() {
 
 	config, err := loadConfiguration()
@@ -53,9 +55,7 @@ func main() {
 
 func loadConsumers() (consumers []MessageConsumer, err error) {
 	err = nil
-	consumers = []MessageConsumer{}
-
-	consumers = append(consumers, new(SayHiMessageConsumer))
+	consumers = []MessageConsumer{new(CommenterMessageConsumer), new(SayHiMessageConsumer)}
 
 	return
 }
@@ -74,5 +74,7 @@ func initConsumers(consumers []MessageConsumer, config *Configuration, store Sta
 func makeStateStore(config *Configuration) (store StateStore, err error) {
 	store = new(InMemoryStateStore)
 	err = store.Initialize(config)
+	store.StoreSaying("MIC™")
+	store.StoreSaying("Tiny bubbles!")
 	return
 }

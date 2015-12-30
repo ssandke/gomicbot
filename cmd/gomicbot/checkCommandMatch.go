@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-const BotName = "gomicbot"
-
 func __internalCheckCommandMatch(message string, command string, argsAllowed bool) (matched bool, args string) {
 
 	matched = false
@@ -24,7 +22,7 @@ func __internalCheckCommandMatch(message string, command string, argsAllowed boo
 }
 
 func checkCommandMatch(message string, command string, isPrivateMessage bool, argsAllowed bool, config *Configuration) (matched bool, args string) {
-	directCommand := fmt.Sprintf("%s@%s", command, BotName)
+	directCommand := fmt.Sprintf("%s%s", command, BotName)
 
 	matched, args = __internalCheckCommandMatch(message, directCommand, argsAllowed)
 	if matched {
