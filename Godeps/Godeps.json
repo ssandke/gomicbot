@@ -6,6 +6,10 @@
 	],
 	"Deps": [
 		{
+			"ImportPath": "github.com/mediocregopher/radix.v2/redis",
+			"Rev": "91435107718b55ff544323a2b0f25fdd8475d283"
+		},
+		{
 			"ImportPath": "github.com/tucnak/telebot",
 			"Comment": "v1.0-36-gfc7d7ee",
 			"Rev": "fc7d7ee8e335796a223834519e68bb57cbd6893a"

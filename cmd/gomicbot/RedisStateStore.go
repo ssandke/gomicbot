@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mediocregopher/radix.v2/redis"
+	"github.com/ssandke/gomicbot/Godeps/_workspace/src/github.com/mediocregopher/radix.v2/redis"
 )
 
 type RedisStateStore struct {
