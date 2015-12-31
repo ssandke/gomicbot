@@ -92,9 +92,13 @@ func (c *Configuration) String() string {
 	if tokenStr != "" {
 		tokenStr = "<redacted>"
 	}
+	redisStr := c.redisUrl
+	if redisStr != "" {
+		redisStr = "<redacted>"
+	}
 
 	return fmt.Sprintf("[token: %s\n redis url: %s\n saying chance: %f\ndirect commands only: %v\nreaders: %v\nwriters: %v]",
-		tokenStr, c.redisUrl, c.sayingChance, c.directCommandsOnly, c.readers, c.writers)
+		tokenStr, redisStr, c.sayingChance, c.directCommandsOnly, c.readers, c.writers)
 }
 
 func getEnvWithDefault(key string, defaultValue string) string {

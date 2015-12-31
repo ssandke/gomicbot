@@ -16,7 +16,7 @@ func main() {
 		panic(err)
 	}
 
-	log.Printf("Configuration Loaded:\n%s", config)
+	log.Printf("Configuration Loaded:\n%s\n", config)
 
 	stateStore, err := makeStateStore(config)
 	if err != nil {
@@ -37,6 +37,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	log.Printf("Initialization complete")
 
 	messages := make(chan telebot.Message)
 	bot.Listen(messages, 1*time.Second)
@@ -75,9 +76,18 @@ func initConsumers(consumers []MessageConsumer, config *Configuration, store Sta
 }
 
 func makeStateStore(config *Configuration) (store StateStore, err error) {
-	store = new(InMemoryStateStore)
-	err = store.Initialize(config)
-	store.StoreSaying("MIC™")
-	store.StoreSaying("Tiny bubbles!")
+
+	if config.redisUrl != "" {
+		log.Println("Creating redis-based state store.")
+		store = new(RedisStateStore)
+		err = store.Initialize(config)
+	} else {
+		log.Println("Creating in-memory state store.")
+		store = new(InMemoryStateStore)
+		err = store.Initialize(config)
+		store.StoreSaying("MIC™")
+		store.StoreSaying("Tiny bubbles!")
+	}
+
 	return
 }

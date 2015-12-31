@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"math/rand"
+	"sort"
 	"strings"
 	"time"
 
@@ -59,12 +60,14 @@ func (c *CommenterMessageConsumer) ConsumeMessage(message telebot.Message) (cons
 func (c *CommenterMessageConsumer) EmitSaying(message telebot.Message, reply bool) {
 	sayings, _ := c.store.LoadSayings()
 
-	var options *telebot.SendOptions
-	if reply {
-		options = &telebot.SendOptions{ReplyTo: message}
-	}
+	if len(sayings) > 0 {
+		var options *telebot.SendOptions
+		if reply {
+			options = &telebot.SendOptions{ReplyTo: message}
+		}
 
-	c.bot.SendMessage(message.Chat, sayings[c.rng.Intn(len(sayings))], options)
+		c.bot.SendMessage(message.Chat, sayings[c.rng.Intn(len(sayings))], options)
+	}
 }
 
 func (c *CommenterMessageConsumer) ListSayings(message telebot.Message) {
@@ -74,6 +77,8 @@ func (c *CommenterMessageConsumer) ListSayings(message telebot.Message) {
 		c.bot.SendMessage(message.Chat, fmt.Sprintf("Error loading sayings: %s", err), &telebot.SendOptions{ReplyTo: message})
 		return
 	}
+
+	sort.Strings(sayings)
 
 	buffer := bytes.NewBufferString(fmt.Sprintf("%d Sayings:\n", len(sayings)))
 
