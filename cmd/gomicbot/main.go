@@ -8,6 +8,7 @@ import (
 )
 
 const BotName = "@gomicbot"
+const OldBotName = "@mic_bot"
 
 func main() {
 

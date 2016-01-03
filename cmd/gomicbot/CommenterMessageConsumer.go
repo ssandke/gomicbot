@@ -42,7 +42,7 @@ func (c *CommenterMessageConsumer) ConsumeMessage(message telebot.Message) (cons
 		c.AddSaying(args, message)
 	} else if args := c.commandMatchWithArgs(message, "/remove"); writer && args != "" {
 		c.RemoveSaying(args, message)
-	} else if reader && strings.Contains(message.Text, BotName) {
+	} else if reader && (strings.Contains(message.Text, BotName) || strings.Contains(message.Text, OldBotName)) {
 		c.EmitSaying(message, true)
 	} else {
 		roll := c.rng.Float64()
